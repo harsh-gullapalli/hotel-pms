@@ -168,7 +168,8 @@ export function Reservations({ initialQuery = '', focusId, go }: { initialQuery?
           subtitle="Arrivals across the week"
           action={<button type="button" onClick={() => go({ view: 'new-reservation' })} className="pms-btn-primary px-3.5 py-2.5">+ New reservation</button>}
         />
-        <div className="grid grid-cols-7 gap-1.5" role="list" aria-label="Arrival days">
+        <div className="overflow-x-auto pb-1">
+          <div className="grid min-w-[560px] grid-cols-7 gap-1.5" role="list" aria-label="Arrival days">
           {DAYS.map((d) => {
             const count = rows.filter((r) => r.checkIn === d).length;
             const active = d === 'Oct 10';
@@ -179,6 +180,7 @@ export function Reservations({ initialQuery = '', focusId, go }: { initialQuery?
               </div>
             );
           })}
+          </div>
         </div>
       </Card>
 

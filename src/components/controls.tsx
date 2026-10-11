@@ -39,7 +39,12 @@ export function Tabs<T extends string>({
   label: string;
 }) {
   return (
-    <div className="flex gap-1 overflow-x-auto rounded-[10px] border p-1" role="tablist" aria-label={label} style={{ borderColor: 'var(--color-border)', background: 'var(--color-muted-surface)' }}>
+    <div
+      className="pms-chip-row gap-1 rounded-[12px] border p-1"
+      role="tablist"
+      aria-label={label}
+      style={{ borderColor: 'var(--color-border)', background: 'color-mix(in srgb, var(--color-muted-surface) 78%, white)', boxShadow: 'var(--shadow-xs), inset 0 1px 2px rgb(40 30 20 / 0.05)' }}
+    >
       {tabs.map((t) => {
         const selected = t.id === active;
         return (
@@ -49,11 +54,12 @@ export function Tabs<T extends string>({
             role="tab"
             aria-selected={selected}
             onClick={() => onChange(t.id)}
-            className="whitespace-nowrap rounded-[8px] px-3.5 py-2 text-[13px] font-semibold"
+            className="min-h-[38px] flex-none whitespace-nowrap rounded-[9px] px-3.5 py-2 text-[13px] font-semibold snap-start"
             style={{
               background: selected ? 'var(--color-surface)' : 'transparent',
               color: selected ? 'var(--color-ink)' : 'var(--color-ink-secondary)',
-              boxShadow: selected ? 'var(--shadow-sm)' : 'none',
+              boxShadow: selected ? 'var(--shadow-md), inset 0 1px 0 white' : 'none',
+              border: selected ? '1px solid var(--color-border)' : '1px solid transparent',
             }}
           >
             {t.label}
@@ -76,31 +82,40 @@ export function Pagination({
   summary: string;
 }) {
   if (totalPages <= 1) return <p className="pms-helper">{summary}</p>;
+  const windowPages = Array.from({ length: totalPages }, (_, i) => i).filter(
+    (i) => i === 0 || i === totalPages - 1 || Math.abs(i - page) <= 1,
+  );
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
       <p className="pms-helper">{summary}</p>
-      <div className="flex items-center gap-1.5" role="navigation" aria-label="Pagination">
-        <button type="button" disabled={page === 0} onClick={() => onChange(page - 1)} className="pms-btn-ghost px-3 py-1.5 disabled:opacity-40" aria-label="Previous page">
+      <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-1" role="navigation" aria-label="Pagination">
+        <button type="button" disabled={page === 0} onClick={() => onChange(page - 1)} className="pms-btn-ghost min-h-[36px] flex-none px-3 py-1.5 disabled:opacity-40" aria-label="Previous page">
           ←
         </button>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => onChange(i)}
-            aria-current={i === page ? 'page' : undefined}
-            aria-label={`Page ${i + 1}`}
-            className="tnum rounded-[8px] border px-3 py-1.5 text-[12.5px] font-semibold"
-            style={{
-              borderColor: i === page ? 'var(--color-primary)' : 'var(--color-border)',
-              background: i === page ? 'var(--color-primary)' : 'var(--color-surface)',
-              color: i === page ? 'var(--color-primary-foreground)' : 'var(--color-ink-secondary)',
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button type="button" disabled={page === totalPages - 1} onClick={() => onChange(page + 1)} className="pms-btn-ghost px-3 py-1.5 disabled:opacity-40" aria-label="Next page">
+        {windowPages.map((i, idx) => {
+          const showEllipsis = idx > 0 && i - windowPages[idx - 1] > 1;
+          return (
+            <span key={i} className="flex flex-none items-center gap-1.5">
+              {showEllipsis ? <span className="px-0.5" style={{ color: 'var(--color-ink-muted)' }}>…</span> : null}
+              <button
+                type="button"
+                onClick={() => onChange(i)}
+                aria-current={i === page ? 'page' : undefined}
+                aria-label={`Page ${i + 1}`}
+                className="tnum min-h-[36px] min-w-[38px] rounded-[9px] border px-3 py-1.5 text-[12.5px] font-bold"
+                style={{
+                  borderColor: i === page ? 'var(--color-primary)' : 'var(--color-border)',
+                  background: i === page ? 'var(--color-primary)' : 'var(--color-surface)',
+                  color: i === page ? 'var(--color-primary-foreground)' : 'var(--color-ink-secondary)',
+                  boxShadow: i === page ? 'var(--shadow-primary)' : 'var(--shadow-xs)',
+                }}
+              >
+                {i + 1}
+              </button>
+            </span>
+          );
+        })}
+        <button type="button" disabled={page === totalPages - 1} onClick={() => onChange(page + 1)} className="pms-btn-ghost min-h-[36px] flex-none px-3 py-1.5 disabled:opacity-40" aria-label="Next page">
           →
         </button>
       </div>
@@ -123,17 +138,36 @@ export function StatCard({
 }) {
   const inner = (
     <>
-      <p className="pms-label">{label}</p>
-      <div className="mt-1 flex items-end justify-between gap-2">
-        <p className="pms-kpi-value tnum">{value}</p>
-        {spark ? <Sparkline points={spark} width={96} height={30} /> : null}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[3px] rounded-t-[16px]"
+        style={{ background: 'linear-gradient(90deg, var(--color-primary), var(--color-soft))', opacity: 0.9 }}
+      />
+      <p className="pms-label truncate">{label}</p>
+      <div className="mt-1.5 flex items-end justify-between gap-2">
+        <p className="pms-kpi-value tnum min-w-0 flex-1 truncate">{value}</p>
+        {spark ? (
+          <span className="flex-none">
+            <Sparkline points={spark} width={88} height={30} />
+          </span>
+        ) : null}
       </div>
-      {hint ? <p className="pms-helper mt-1.5">{hint}</p> : null}
+      {hint ? <p className="pms-helper mt-1.5 line-clamp-1">{hint}</p> : null}
     </>
   );
-  if (!onClick) return <section className="pms-card p-4">{inner}</section>;
+  if (!onClick)
+    return (
+      <section className="pms-card relative overflow-hidden p-4">
+        {inner}
+      </section>
+    );
   return (
-    <button type="button" onClick={onClick} className="pms-card pms-card-hover p-4 text-left" aria-label={`${label}: ${value}. View details`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className="pms-card pms-card-hover relative overflow-hidden p-4 text-left"
+      aria-label={`${label}: ${value}. View details`}
+    >
       {inner}
     </button>
   );
@@ -156,11 +190,12 @@ export function FilterChip({
       onClick={onClick}
       aria-pressed={active}
       aria-label={pressedLabel}
-      className="whitespace-nowrap rounded-full border px-3 py-1.5 text-[12px] font-semibold"
+      className="min-h-[34px] flex-none whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold snap-start"
       style={{
         borderColor: active ? 'var(--color-primary)' : 'var(--color-border)',
         background: active ? 'var(--color-primary)' : 'var(--color-surface)',
         color: active ? 'var(--color-primary-foreground)' : 'var(--color-ink-secondary)',
+        boxShadow: active ? 'var(--shadow-primary)' : 'var(--shadow-xs)',
       }}
     >
       {children}
@@ -169,9 +204,9 @@ export function FilterChip({
 }
 
 /** Card wrapper for mobile: renders children as stacked cards under `md`, table on desktop. */
-export function ResponsiveTable({ children, minWidth = 720 }: { children: ReactNode; minWidth?: number }) {
+export function ResponsiveTable({ children, minWidth = 640 }: { children: ReactNode; minWidth?: number }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="pms-table-wrap">
       <table className="pms-table" style={{ minWidth: `${minWidth}px` }}>
         {children}
       </table>

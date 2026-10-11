@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import { Header, Sidebar } from './components/layout';
 import type { NavTarget, ViewId } from './components/nav';
 import { labelOf, sectionOf } from './components/nav';
@@ -9,31 +9,48 @@ import { useTheme } from './theme/useTheme';
 import { THEME_PRESETS } from './theme/presets';
 import { Toaster } from './components/overlays';
 import { Dashboard } from './pages/Dashboard';
-import { Reservations } from './pages/Reservations';
-import { NewReservation } from './pages/NewReservation';
-import { CheckIn } from './pages/CheckIn';
-import { CheckOut } from './pages/CheckOut';
-import { InHouse } from './pages/InHouse';
-import { Guests } from './pages/Guests';
-import { WalkIn } from './pages/WalkIn';
-import { Rooms } from './pages/Rooms';
-import { RoomTypes } from './pages/RoomTypes';
-import { RoomInventory } from './pages/RoomInventory';
-import { StatusBoard } from './pages/StatusBoard';
-import { Housekeeping } from './pages/Housekeeping';
-import { Maintenance } from './pages/Maintenance';
-import { Billing } from './pages/Billing';
-import { Payments } from './pages/Payments';
-import { Invoices } from './pages/Invoices';
-import { Expenses } from './pages/Expenses';
-import { Rates } from './pages/Rates';
-import { Reports } from './pages/Reports';
-import { OccupancyReport } from './pages/OccupancyReport';
-import { RevenueReport } from './pages/RevenueReport';
-import { ArrivalsReport } from './pages/ArrivalsReport';
-import { Staff } from './pages/Staff';
-import { Properties } from './pages/Properties';
-import { Settings } from './pages/Settings';
+
+const Reservations = lazy(() => import('./pages/Reservations').then((m) => ({ default: m.Reservations })));
+const NewReservation = lazy(() => import('./pages/NewReservation').then((m) => ({ default: m.NewReservation })));
+const CheckIn = lazy(() => import('./pages/CheckIn').then((m) => ({ default: m.CheckIn })));
+const CheckOut = lazy(() => import('./pages/CheckOut').then((m) => ({ default: m.CheckOut })));
+const InHouse = lazy(() => import('./pages/InHouse').then((m) => ({ default: m.InHouse })));
+const Guests = lazy(() => import('./pages/Guests').then((m) => ({ default: m.Guests })));
+const WalkIn = lazy(() => import('./pages/WalkIn').then((m) => ({ default: m.WalkIn })));
+const Rooms = lazy(() => import('./pages/Rooms').then((m) => ({ default: m.Rooms })));
+const RoomTypes = lazy(() => import('./pages/RoomTypes').then((m) => ({ default: m.RoomTypes })));
+const RoomInventory = lazy(() => import('./pages/RoomInventory').then((m) => ({ default: m.RoomInventory })));
+const StatusBoard = lazy(() => import('./pages/StatusBoard').then((m) => ({ default: m.StatusBoard })));
+const Housekeeping = lazy(() => import('./pages/Housekeeping').then((m) => ({ default: m.Housekeeping })));
+const Maintenance = lazy(() => import('./pages/Maintenance').then((m) => ({ default: m.Maintenance })));
+const Billing = lazy(() => import('./pages/Billing').then((m) => ({ default: m.Billing })));
+const Payments = lazy(() => import('./pages/Payments').then((m) => ({ default: m.Payments })));
+const Invoices = lazy(() => import('./pages/Invoices').then((m) => ({ default: m.Invoices })));
+const Expenses = lazy(() => import('./pages/Expenses').then((m) => ({ default: m.Expenses })));
+const Rates = lazy(() => import('./pages/Rates').then((m) => ({ default: m.Rates })));
+const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.Reports })));
+const OccupancyReport = lazy(() => import('./pages/OccupancyReport').then((m) => ({ default: m.OccupancyReport })));
+const RevenueReport = lazy(() => import('./pages/RevenueReport').then((m) => ({ default: m.RevenueReport })));
+const ArrivalsReport = lazy(() => import('./pages/ArrivalsReport').then((m) => ({ default: m.ArrivalsReport })));
+const Staff = lazy(() => import('./pages/Staff').then((m) => ({ default: m.Staff })));
+const Properties = lazy(() => import('./pages/Properties').then((m) => ({ default: m.Properties })));
+const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })));
+
+function PageFallback() {
+  return (
+    <div className="flex flex-col gap-3" aria-busy="true" aria-label="Loading page">
+      <div className="pms-card p-4 sm:p-5">
+        <div className="h-5 w-40 rounded-full" style={{ background: 'var(--color-muted-surface)' }} />
+        <div className="mt-2 h-4 w-64 max-w-full rounded-full" style={{ background: 'var(--color-divider)' }} />
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="pms-card min-h-[112px] p-4" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const VIEW_META: Record<ViewId, { title: string; subtitle: string }> = {
   dashboard: { title: 'Good evening, Atrium', subtitle: 'Friday, Oct 10 · 124 in-house · 24 arrivals · 18 departures' },
@@ -139,7 +156,10 @@ function Shell() {
   }, [view, target.query, target.focusId, go]);
 
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--color-page)', color: 'var(--color-ink)' }}>
+    <div className="flex min-h-screen" style={{ background: 'var(--color-page)', backgroundImage: 'var(--gradient-page)', backgroundAttachment: 'fixed', color: 'var(--color-ink)' }}>
+      <a href="#pms-main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[70] focus:rounded-[10px] focus:border focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-ink)' }}>
+        Skip to main content
+      </a>
       <Sidebar active={view} onNavigate={(v) => go({ view: v })} mobileOpen={navOpen} onClose={() => setNavOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header
@@ -150,14 +170,14 @@ function Shell() {
           onOpenThemes={() => setSwatcherOpen(true)}
           onGo={go}
         />
-        <main key={`${view}-${target.focusId ?? ''}-${target.query ?? ''}`} className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-5 sm:px-6">
-          {page}
+        <main id="pms-main" tabIndex={-1} key={`${view}-${target.focusId ?? ''}-${target.query ?? ''}`} className="pms-animate-fade-up mx-auto w-full max-w-[1280px] flex-1 px-3 py-4 sm:px-5 sm:py-6 lg:px-8 2xl:max-w-[1440px]">
+          <Suspense fallback={<PageFallback />}>{page}</Suspense>
         </main>
         <footer
-          className="border-t px-4 py-3 sm:px-6"
-          style={{ borderColor: 'var(--color-border)', background: 'var(--color-sidebar)' }}
+          className="border-t px-4 py-3.5 sm:px-6"
+          style={{ borderColor: 'var(--color-border)', background: 'color-mix(in srgb, var(--color-sidebar) 88%, var(--color-surface))', boxShadow: '0 -8px 24px -16px rgb(40 30 20 / 0.18)' }}
         >
-          <p className="tnum mx-auto w-full max-w-[1200px] text-[11.5px]" style={{ color: 'var(--color-ink-secondary)' }}>
+          <p className="tnum mx-auto w-full max-w-[1280px] text-[11.5px] font-medium 2xl:max-w-[1440px]" style={{ color: 'var(--color-ink-secondary)' }}>
             Atrium PMS · {THEME_PRESETS[preset].name} · 6 colour themes ·
             status colours fixed across themes · static demo data
           </p>

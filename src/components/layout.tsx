@@ -145,29 +145,28 @@ function NavButton({
       type="button"
       onClick={onSelect}
       aria-current={selected ? 'page' : undefined}
-      className="flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left text-[13.5px] font-medium"
+      className="flex min-h-[40px] w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-[13.5px]"
       style={
         selected
           ? {
               background: 'var(--color-surface)',
               color: 'var(--color-ink)',
               border: '1px solid var(--color-border)',
-              boxShadow: 'var(--shadow-sm)',
+              boxShadow: 'var(--shadow-xs), inset 3px 0 0 var(--color-primary)',
+              fontWeight: 650,
             }
           : {
               background: 'transparent',
               color: 'var(--color-ink-secondary)',
               border: '1px solid transparent',
+              fontWeight: 500,
             }
       }
     >
-      <span style={{ color: selected ? 'var(--color-primary)' : 'inherit' }}>
+      <span className="flex-none" style={{ color: selected ? 'var(--color-primary)' : 'inherit' }}>
         <NavIcon id={id} />
       </span>
-      <span className="flex-1">{label}</span>
-      {selected ? (
-        <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--color-primary)' }} aria-hidden="true" />
-      ) : null}
+      <span className="min-w-0 flex-1 truncate">{label}</span>
     </button>
   );
 }
@@ -198,32 +197,32 @@ export function Sidebar({
 
   const panel = (
     <div className="flex h-full flex-col" style={{ background: 'var(--color-sidebar)' }}>
-      <div className="flex items-center gap-3 px-5 pb-5 pt-6">
+      <div className="flex items-center gap-3 border-b px-4 pb-4 pt-5" style={{ borderColor: 'var(--color-border)' }}>
         <span
-          className="flex h-10 w-10 items-center justify-center rounded-xl font-brand text-[20px] font-bold"
-          style={{ background: 'var(--color-dark-accent)', color: 'var(--color-sidebar)' }}
+          className="flex h-10 w-10 items-center justify-center rounded-xl font-brand text-[19px] font-bold"
+          style={{ background: 'var(--color-dark-accent)', color: '#fff', boxShadow: 'var(--shadow-sm)' }}
           aria-hidden="true"
         >
           A
         </span>
-        <div>
-          <p className="font-brand text-[19px] font-bold leading-none" style={{ color: 'var(--color-ink)' }}>
+        <div className="min-w-0">
+          <p className="font-brand truncate text-[18px] font-bold leading-none tracking-tight" style={{ color: 'var(--color-ink)' }}>
             Atrium
           </p>
-          <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em]" style={{ color: 'var(--color-ink-secondary)' }}>
+          <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--color-ink-secondary)' }}>
             Hotel PMS
           </p>
         </div>
       </div>
-      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4" aria-label="Primary">
-        <ul className="flex flex-col gap-1">
+      <nav className="min-h-0 flex-1 overflow-y-auto px-2.5 py-3" aria-label="Primary">
+        <ul className="flex flex-col gap-0.5">
           {NAV_SECTIONS.map((section) => {
             const open = openSections.includes(section.title);
             const containsActive = section.items.some((i) => i.id === active);
             if (section.title === 'Overview') {
               return (
                 <li key={section.title}>
-                  <ul className="flex flex-col gap-1">
+                  <ul className="flex flex-col gap-0.5">
                     {section.items.map((item) => (
                       <li key={item.id}>
                         <NavButton id={item.id} label={item.label} selected={item.id === active} onSelect={() => go(item.id)} />
@@ -234,21 +233,24 @@ export function Sidebar({
               );
             }
             return (
-              <li key={section.title} className="mt-1">
+              <li key={section.title} className="mt-4 first:mt-0">
                 <button
                   type="button"
                   onClick={() => toggleSection(section.title)}
                   aria-expanded={open}
-                  className="flex w-full items-center justify-between rounded-[8px] px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ color: containsActive ? 'var(--color-ink)' : 'var(--color-ink-secondary)' }}
+                  className="flex min-h-[32px] w-full items-center justify-between rounded-[8px] px-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.12em]"
+                  style={{
+                    color: containsActive ? 'var(--color-ink)' : 'var(--color-ink-muted)',
+                    background: 'transparent',
+                  }}
                 >
                   {section.title}
-                  <svg viewBox="0 0 24 24" className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
                 {open ? (
-                  <ul className="mt-0.5 flex flex-col gap-1">
+                  <ul className="mt-1 flex flex-col gap-0.5">
                     {section.items.map((item) => (
                       <li key={item.id}>
                         <NavButton id={item.id} label={item.label} selected={item.id === active} onSelect={() => go(item.id)} />
@@ -261,21 +263,9 @@ export function Sidebar({
           })}
         </ul>
       </nav>
-      <div
-        className="mx-3 mb-4 rounded-[10px] border p-3"
-        style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-      >
-        <p className="text-[12px] font-semibold" style={{ color: 'var(--color-ink)' }}>
-          Occupancy tonight
-        </p>
-        <p className="tnum mt-0.5 text-[22px] font-semibold" style={{ color: 'var(--color-ink)' }}>
-          78%
-        </p>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'var(--color-divider)' }}>
-          <div className="h-full rounded-full" style={{ width: '78%', background: 'var(--color-primary)' }} />
-        </div>
-        <p className="mt-1.5 text-[11.5px]" style={{ color: 'var(--color-ink-secondary)' }}>
-          124 of 159 rooms occupied
+      <div className="border-t px-4 py-3" style={{ borderColor: 'var(--color-border)' }}>
+        <p className="truncate text-[11px] font-medium" style={{ color: 'var(--color-ink-muted)' }}>
+          Atrium PMS · Front Office
         </p>
       </div>
     </div>
@@ -284,7 +274,7 @@ export function Sidebar({
   return (
     <>
       <aside
-        className="hidden w-[264px] flex-none self-start border-r lg:sticky lg:top-0 lg:block lg:h-screen"
+        className="hidden w-[260px] flex-none self-start border-r lg:sticky lg:top-0 lg:block lg:h-screen"
         style={{ borderColor: 'var(--color-border)' }}
       >
         {panel}
@@ -294,15 +284,19 @@ export function Sidebar({
           <button
             type="button"
             aria-label="Close navigation"
-            className="absolute inset-0 h-full w-full"
-            style={{ background: 'rgb(0 0 0 / 0.35)' }}
+            className="pms-overlay-backdrop absolute inset-0 h-full w-full"
+            style={{ background: 'rgb(20 14 10 / 0.45)' }}
             onClick={onClose}
           />
           <aside
-            className="absolute left-0 top-0 h-full w-[280px] border-r shadow-lg"
-            style={{ borderColor: 'var(--color-border)' }}
+            className="pms-overlay-enter absolute left-0 top-0 h-full w-[86vw] max-w-[320px] overflow-hidden rounded-r-[16px] border-r"
+            style={{ borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-2xl)', background: 'var(--color-sidebar)' }}
           >
-            {panel}
+            <div className="flex items-center justify-between border-b px-4 py-3 lg:hidden" style={{ borderColor: 'var(--color-border)' }}>
+              <span className="text-[12px] font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--color-ink-secondary)' }}>Menu</span>
+              <button type="button" onClick={onClose} aria-label="Close navigation" className="pms-btn-ghost min-h-[38px] min-w-[38px] px-2.5 py-1.5">✕</button>
+            </div>
+            <div className="h-[calc(100%-53px)]">{panel}</div>
           </aside>
         </div>
       ) : null}
@@ -399,12 +393,21 @@ export function Header({
 }) {
   const [query, setQuery] = useState('');
   const [searchFocus, setSearchFocus] = useState(false);
+  const [mobileSearch, setMobileSearch] = useState(false);
   const [panel, setPanel] = useState<'none' | 'notices' | 'profile'>('none');
   const [read, setRead] = useState<string[]>([]);
   const hits = searchAll(query);
   const closePanels = () => setPanel('none');
   const dismissRef = useDismiss(closePanels);
   const unread = NOTICES.filter((n) => !read.includes(n.id)).length;
+
+  const submitSearch = () => {
+    if (hits.length > 0) {
+      onGo(hits[0].target);
+      setQuery('');
+      setMobileSearch(false);
+    }
+  };
 
   const openNotice = (target: string, id: string) => {
     setRead((r) => (r.includes(id) ? r : [...r, id]));
@@ -415,29 +418,32 @@ export function Header({
 
   return (
     <header
-      className="sticky top-0 z-30 border-b backdrop-blur"
+      className="sticky top-0 z-30 border-b"
       style={{
-        background: 'color-mix(in srgb, var(--color-page) 88%, transparent)',
+        background: 'color-mix(in srgb, var(--color-page) 78%, transparent)',
+        backdropFilter: 'var(--blur-glass)',
+        WebkitBackdropFilter: 'var(--blur-glass)',
         borderColor: 'var(--color-border)',
+        boxShadow: '0 8px 28px -14px rgb(40 30 20 / 0.18)',
       }}
     >
-      <div className="flex items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6">
+      <div className="mx-auto flex w-full max-w-[1280px] items-center gap-2 px-3 py-3 sm:gap-3 sm:px-5 lg:px-8 2xl:max-w-[1440px]">
         <button
           type="button"
           onClick={onMenu}
           aria-label="Open navigation"
-          className="pms-btn-ghost px-2.5 py-2 lg:hidden"
+          className="pms-btn-ghost min-h-[42px] min-w-[42px] flex-none px-2.5 py-2 lg:hidden"
         >
-          <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
             <path d="M4 7h16M4 12h16M4 17h16" />
           </svg>
         </button>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: 'var(--color-ink-muted)' }}>
+        <div className="min-w-0 flex-1 basis-40">
+          <p className="truncate text-[10.5px] font-bold uppercase tracking-[0.14em] sm:text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>
             {crumb}
           </p>
-          <h1 className="pms-page-title truncate text-[22px] sm:text-[26px]">{title}</h1>
-          <p className="pms-helper truncate">{subtitle}</p>
+          <h1 className="pms-page-title truncate">{title}</h1>
+          <p className="pms-helper hidden truncate sm:block">{subtitle}</p>
         </div>
         <div className="relative hidden min-w-[200px] max-w-[300px] flex-1 md:block">
           <label className="sr-only" htmlFor="global-search">
@@ -451,10 +457,7 @@ export function Header({
             onFocus={() => setSearchFocus(true)}
             onBlur={() => window.setTimeout(() => setSearchFocus(false), 150)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && hits.length > 0) {
-                onGo(hits[0].target);
-                setQuery('');
-              }
+              if (e.key === 'Enter') submitSearch();
             }}
             placeholder="Search reservations, rooms, guests…"
             className="pms-input w-full px-3.5 py-2.5"
@@ -467,8 +470,8 @@ export function Header({
               id="global-search-results"
               role="listbox"
               aria-label="Search results"
-              className="absolute left-0 right-0 top-full z-40 mt-1.5 overflow-hidden rounded-[10px] border shadow-lg"
-              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+              className="pms-animate-pop absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-[14px] border"
+              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-popover)' }}
             >
               {hits.map((h) => (
                 <li key={`${h.kind}-${h.label}`}>
@@ -503,13 +506,25 @@ export function Header({
             </ul>
           ) : null}
         </div>
-        <div className="relative" ref={panel === 'notices' ? dismissRef : undefined}>
+        <button
+          type="button"
+          onClick={() => setMobileSearch((v) => !v)}
+          aria-label="Toggle search"
+          aria-expanded={mobileSearch}
+          className="pms-btn-ghost min-h-[42px] min-w-[42px] flex-none px-2.5 py-2 md:hidden"
+        >
+          <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="M16 16l4.5 4.5" />
+          </svg>
+        </button>
+        <div className="relative flex-none" ref={panel === 'notices' ? dismissRef : undefined}>
           <button
             type="button"
             onClick={() => setPanel(panel === 'notices' ? 'none' : 'notices')}
             aria-label={`Notifications, ${unread} unread`}
             aria-expanded={panel === 'notices'}
-            className="pms-btn-ghost relative px-2.5 py-2"
+            className="pms-btn-ghost relative min-h-[42px] min-w-[42px] px-2.5 py-2"
           >
             <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
@@ -526,8 +541,8 @@ export function Header({
           </button>
           {panel === 'notices' ? (
             <div
-              className="absolute right-0 top-full z-40 mt-1.5 max-h-[70vh] w-[320px] overflow-y-auto rounded-[12px] border shadow-lg"
-              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+              className="pms-animate-pop absolute right-0 top-full z-40 mt-2 max-h-[70dvh] w-[min(340px,86vw)] overflow-y-auto rounded-[16px] border"
+              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-popover)' }}
               role="dialog"
               aria-label="Notifications"
             >
@@ -598,8 +613,8 @@ export function Header({
           </button>
           {panel === 'profile' ? (
             <div
-              className="absolute right-0 top-full z-40 mt-1.5 w-[220px] overflow-hidden rounded-[12px] border shadow-lg"
-              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+              className="pms-animate-pop absolute right-0 top-full z-40 mt-2 w-[min(240px,80vw)] overflow-hidden rounded-[14px] border"
+              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-popover)' }}
               role="menu"
               aria-label="User profile"
             >
@@ -639,6 +654,56 @@ export function Header({
           ) : null}
         </div>
       </div>
+      {mobileSearch ? (
+        <div className="border-t px-3 pb-3 pt-2 md:hidden" style={{ borderColor: 'var(--color-border)' }}>
+          <div className="mx-auto w-full max-w-[1280px]">
+            <label className="sr-only" htmlFor="global-search-mobile">
+              Search reservations, rooms, guests
+            </label>
+            <input
+              id="global-search-mobile"
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') submitSearch();
+              }}
+              placeholder="Search reservations, rooms, guests…"
+              className="pms-input w-full px-3.5 py-2.5"
+              autoFocus
+            />
+            {query.trim().length >= 2 ? (
+              <ul className="mt-2 overflow-hidden rounded-[12px] border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-md)' }}>
+                {hits.length === 0 ? (
+                  <li className="pms-helper px-3.5 py-3">No matches — try a name, ID, or room number.</li>
+                ) : (
+                  hits.map((h) => (
+                    <li key={`${h.kind}-${h.label}`}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onGo(h.target);
+                          setQuery('');
+                          setMobileSearch(false);
+                        }}
+                        className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left"
+                      >
+                        <span className="flex-none rounded-full px-2 py-0.5 text-[10.5px] font-semibold" style={{ background: 'var(--color-muted-surface)', color: 'var(--color-ink-secondary)' }}>
+                          {h.kind}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>{h.label}</span>
+                          <span className="block truncate text-[11.5px]" style={{ color: 'var(--color-ink-secondary)' }}>{h.detail}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

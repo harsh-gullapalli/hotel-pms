@@ -34,15 +34,15 @@ export function Dashboard({ go }: { go: (t: NavTarget) => void }) {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+    <div className="flex flex-col gap-4 sm:gap-5">
+      <div className="pms-stagger grid grid-cols-1 gap-3 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
         {stats.map((s) => (
           <StatCard key={s.label} label={s.label} value={s.value} hint={s.hint} spark={s.spark} onClick={s.target ? () => go(s.target as NavTarget) : undefined} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-5">
-        <Card className="xl:col-span-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-5">
+        <Card elevated className="lg:col-span-2 xl:col-span-3">
           <CardTitle title="Revenue trend" subtitle="Room revenue in $k, last 7 days" action={<Badge tone="success">● On pace +8%</Badge>} />
           <BarChart
             label="Revenue rising toward Friday peak"
@@ -57,7 +57,7 @@ export function Dashboard({ go }: { go: (t: NavTarget) => void }) {
             ]}
           />
         </Card>
-        <Card className="xl:col-span-2">
+        <Card className="lg:col-span-2 xl:col-span-2">
           <CardTitle title="Occupancy mix" subtitle="Rooms by status tonight" />
           <DonutChart
             label="Rooms by status"

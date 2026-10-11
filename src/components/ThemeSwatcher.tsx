@@ -32,12 +32,12 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
         type="button"
         aria-label="Close appearance settings"
         onClick={onClose}
-        className="absolute inset-0 h-full w-full"
-        style={{ background: 'rgb(0 0 0 / 0.4)' }}
+        className="pms-overlay-backdrop absolute inset-0 h-full w-full"
+        style={{ background: 'rgb(20 14 10 / 0.45)' }}
       />
       <aside
-        className="absolute right-0 top-0 flex h-full w-full max-w-[440px] flex-col border-l"
-        style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+        className="pms-overlay-enter absolute right-0 top-0 flex h-full w-full flex-col border-l"
+        style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-2xl)', maxWidth: 'min(460px, 100vw)' }}
       >
         <div
           className="flex items-start justify-between gap-3 border-b px-5 py-4"
@@ -58,7 +58,7 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
         <div className="flex-1 overflow-y-auto px-5 py-5">
           <h3 className="pms-label mb-1">Colour preset</h3>
           <p className="pms-helper mb-3">Six house palettes in a light linen finish.</p>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2" role="radiogroup" aria-label="Colour preset">
+          <div className="grid grid-cols-1 gap-2.5 xs:grid-cols-2 sm:grid-cols-2" role="radiogroup" aria-label="Colour preset">
             {PRESET_LIST.map((p) => {
               const checked = preset === p.id;
               return (
@@ -68,11 +68,11 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
                   role="radio"
                   aria-checked={checked}
                   onClick={() => setPreset(p.id)}
-                  className="rounded-[12px] border p-3 text-left"
+                  className="rounded-[14px] border p-3 text-left transition-all duration-200 hover:-translate-y-0.5"
                   style={{
                     borderColor: checked ? 'var(--color-primary)' : 'var(--color-border)',
-                    background: checked ? 'var(--color-hover-surface)' : 'var(--color-surface)',
-                    boxShadow: checked ? '0 0 0 1px var(--color-primary)' : 'var(--shadow-sm)',
+                    background: checked ? 'color-mix(in srgb, var(--color-hover-surface) 78%, white)' : 'var(--color-surface)',
+                    boxShadow: checked ? 'var(--shadow-primary), 0 0 0 1px var(--color-primary)' : 'var(--shadow-md)',
                   }}
                 >
                   <span className="flex items-center justify-between gap-2">

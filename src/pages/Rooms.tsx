@@ -138,9 +138,9 @@ export function Rooms({ initialQuery = '', focusId }: { initialQuery?: string; f
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="pms-stagger grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {filtered.map((room) => (
-          <article key={room.number} className="pms-card pms-card-hover p-4">
+          <article key={room.number} className="pms-card pms-card-hover p-4 sm:p-5">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="tnum text-[20px] font-semibold leading-none" style={{ color: 'var(--color-ink)' }}>{room.number}</p>
