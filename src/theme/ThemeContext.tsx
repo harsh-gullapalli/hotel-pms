@@ -4,7 +4,7 @@ import { STORAGE_KEYS, isHexColor, isPresetId } from './presets';
 import type { ThemePresetId } from './presets';
 import { ThemeContext } from './context';
 
-const DEFAULT_PRESET: ThemePresetId = 'beige';
+const DEFAULT_PRESET: ThemePresetId = 'midnight';
 
 function readStoredPreset(): ThemePresetId {
   try {

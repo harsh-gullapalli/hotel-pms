@@ -214,11 +214,11 @@ export interface Notice {
 }
 
 export const PROPERTY = {
-  name: 'Atrium House',
+  name: 'TriponX House',
   tagline: 'Boutique hotel · Lakeside district',
   address: '14 Marina Row, Lakeshore',
   phone: '+1 415 555 0100',
-  email: 'stay@atriumhouse.example',
+  email: 'stay@triponx.example',
   rooms: 159,
   floors: 5,
   checkInTime: '15:00',
@@ -427,14 +427,14 @@ export const MAINTENANCE: MaintenanceRequest[] = [
 ];
 
 export const STAFF: StaffMember[] = [
-  { id: 'S-01', name: 'Nora Bennett', role: 'General Manager', department: 'Management', phone: '+1 415 555 0101', email: 'nora@atriumhouse.example', status: 'Active', permissions: ['All modules', 'Rates', 'Staff', 'Reports'] },
-  { id: 'S-02', name: 'Liam Carter', role: 'Front-desk Agent', department: 'Front Office', phone: '+1 415 555 0102', email: 'liam@atriumhouse.example', status: 'Active', permissions: ['Reservations', 'Check-in/out', 'Guests', 'Folios'] },
-  { id: 'S-03', name: 'Maria Santos', role: 'Housekeeping Lead', department: 'Housekeeping', phone: '+1 415 555 0103', email: 'maria@atriumhouse.example', status: 'Active', permissions: ['Housekeeping', 'Rooms (status)', 'Maintenance (report)'] },
-  { id: 'S-04', name: 'James Keller', role: 'Housekeeper', department: 'Housekeeping', phone: '+1 415 555 0104', email: 'james@atriumhouse.example', status: 'Active', permissions: ['Housekeeping (assigned)'] },
-  { id: 'S-05', name: 'Ana Reyes', role: 'Housekeeper', department: 'Housekeeping', phone: '+1 415 555 0105', email: 'ana@atriumhouse.example', status: 'On leave', permissions: ['Housekeeping (assigned)'] },
-  { id: 'S-06', name: 'Omar Farouk', role: 'Accountant', department: 'Finance', phone: '+1 415 555 0106', email: 'omar@atriumhouse.example', status: 'Active', permissions: ['Billing', 'Payments', 'Invoices', 'Expenses'] },
-  { id: 'S-07', name: 'Grace Liu', role: 'Maintenance Tech', department: 'Engineering', phone: '+1 415 555 0107', email: 'grace@atriumhouse.example', status: 'Active', permissions: ['Maintenance', 'Rooms (status)'] },
-  { id: 'S-08', name: 'Peter Novak', role: 'Night Auditor', department: 'Front Office', phone: '+1 415 555 0108', email: 'peter@atriumhouse.example', status: 'Inactive', permissions: ['Reservations (view)', 'Reports'] },
+  { id: 'S-01', name: 'Nora Bennett', role: 'General Manager', department: 'Management', phone: '+1 415 555 0101', email: 'nora@triponx.example', status: 'Active', permissions: ['All modules', 'Rates', 'Staff', 'Reports'] },
+  { id: 'S-02', name: 'Liam Carter', role: 'Front-desk Agent', department: 'Front Office', phone: '+1 415 555 0102', email: 'liam@triponx.example', status: 'Active', permissions: ['Reservations', 'Check-in/out', 'Guests', 'Folios'] },
+  { id: 'S-03', name: 'Maria Santos', role: 'Housekeeping Lead', department: 'Housekeeping', phone: '+1 415 555 0103', email: 'maria@triponx.example', status: 'Active', permissions: ['Housekeeping', 'Rooms (status)', 'Maintenance (report)'] },
+  { id: 'S-04', name: 'James Keller', role: 'Housekeeper', department: 'Housekeeping', phone: '+1 415 555 0104', email: 'james@triponx.example', status: 'Active', permissions: ['Housekeeping (assigned)'] },
+  { id: 'S-05', name: 'Ana Reyes', role: 'Housekeeper', department: 'Housekeeping', phone: '+1 415 555 0105', email: 'ana@triponx.example', status: 'On leave', permissions: ['Housekeeping (assigned)'] },
+  { id: 'S-06', name: 'Omar Farouk', role: 'Accountant', department: 'Finance', phone: '+1 415 555 0106', email: 'omar@triponx.example', status: 'Active', permissions: ['Billing', 'Payments', 'Invoices', 'Expenses'] },
+  { id: 'S-07', name: 'Grace Liu', role: 'Maintenance Tech', department: 'Engineering', phone: '+1 415 555 0107', email: 'grace@triponx.example', status: 'Active', permissions: ['Maintenance', 'Rooms (status)'] },
+  { id: 'S-08', name: 'Peter Novak', role: 'Night Auditor', department: 'Front Office', phone: '+1 415 555 0108', email: 'peter@triponx.example', status: 'Inactive', permissions: ['Reservations (view)', 'Reports'] },
 ];
 
 export const NOTICES: Notice[] = [
@@ -445,15 +445,6 @@ export const NOTICES: Notice[] = [
   { id: 'N-5', title: 'Room 204 inspected', detail: 'Ready for VIP arrival this afternoon.', tone: 'success', time: '09:25', target: 'room-overview' },
   { id: 'N-6', title: '2 late check-outs approved', detail: '501 until 14:00; 305 until 12:30.', tone: 'info', time: '10:02', target: 'check-out' },
 ];
-
-export const KPIS = [
-  { label: 'Occupancy', value: '78%', delta: '+4.2 pts vs last week', spark: [42, 55, 50, 62, 70, 66, 78] },
-  { label: 'ADR', value: '$186', delta: '+$9 vs last week', spark: [160, 168, 172, 165, 178, 182, 186] },
-  { label: 'RevPAR', value: '$145', delta: '+$12 vs last week', spark: [110, 118, 122, 128, 135, 140, 145] },
-  { label: "Today's revenue", value: '$48.2k', delta: '124 rooms in-house', spark: [30, 36, 34, 42, 44, 46, 48] },
-  { label: 'Arrivals', value: '24', delta: '6 VIP arrivals', spark: [10, 14, 12, 18, 16, 20, 24] },
-  { label: 'Departures', value: '18', delta: '2 late check-outs', spark: [8, 12, 10, 14, 12, 16, 18] },
-] as const;
 
 export const TODAY = {
   arrivals: 24,

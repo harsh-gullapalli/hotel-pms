@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { GUESTS, PROPERTY, ROOM_TYPES, formatMoney } from '../data/mock';
-import { Card, CardTitle } from '../components/ui';
+import { GUESTS, PROPERTY, ROOMS, ROOM_TYPES, formatMoney } from '../data/mock';
+import { Badge, Card, CardTitle } from '../components/ui';
 import { Field } from '../components/controls';
 import { inputClass } from '../components/inputClass';
 import { ConfirmDialog } from '../components/overlays';
 import { toast } from '../components/toastStore';
+import { roomTone } from '../components/status';
 import type { NavTarget } from '../components/nav';
 
 const SOURCES = ['Direct', 'OTA', 'Corporate', 'Walk-in', 'Travel agent'];
@@ -27,6 +28,7 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
   const [children, setChildren] = useState(0);
   const [roomType, setRoomType] = useState(ROOM_TYPES[1].name);
   const [rooms, setRooms] = useState(1);
+  const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
   const [ratePlan, setRatePlan] = useState(RATE_PLANS[0]);
   const [discount, setDiscount] = useState(0);
   const [extras, setExtras] = useState<string[]>(['Breakfast (per night)']);
@@ -58,6 +60,17 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
   const total = subtotal - clampedDiscount + tax;
   const balance = total - Math.min(deposit, total);
 
+  const FLOORS = [1, 2, 3, 4, 5];
+  const isPickable = (r: (typeof ROOMS)[number]) =>
+    r.type === roomType && (r.status === 'Available' || r.status === 'Inspected');
+  const toggleRoom = (no: string) => {
+    setSelectedRooms((prev) => {
+      if (prev.includes(no)) return prev.filter((x) => x !== no);
+      if (prev.length >= rooms) return prev;
+      return [...prev, no];
+    });
+  };
+
   const validate = () => {
     const errs: string[] = [];
     if (guestChoice === 'new') {
@@ -68,6 +81,7 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
     if (nights < 1) errs.push('Check-out must be after check-in (at least 1 night).');
     if (adults + children > type.maxOccupancy * rooms) errs.push(`${type.name} holds max ${type.maxOccupancy} per room — reduce guests or add rooms.`);
     if (availability <= 0) errs.push('No rooms of this type left for these dates in the demo inventory.');
+    if (selectedRooms.length > 0 && selectedRooms.length !== rooms) errs.push(`Select ${rooms} room${rooms === 1 ? '' : 's'} on the blueprint — currently ${selectedRooms.length} picked.`);
     if (deposit < 0 || deposit > total) errs.push('Deposit must be between $0 and the total.');
     setErrors(errs);
     return errs.length === 0;
@@ -82,7 +96,7 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
           <span className="flex h-14 w-14 items-center justify-center rounded-full text-[24px] font-bold" style={{ background: 'var(--color-success-bg)', color: 'var(--color-success-text)' }} aria-hidden="true">✓</span>
           <h3 className="pms-section-title">Reservation {done} drafted</h3>
           <p className="max-w-[440px] text-[13.5px]" style={{ color: 'var(--color-ink-secondary)' }}>
-            {guestName} · {roomType} × {rooms} · {nights} night{nights === 1 ? '' : 's'} · total <span className="tnum font-semibold" style={{ color: 'var(--color-ink)' }}>${formatMoney(total)}</span>.
+            {guestName} · {roomType} × {rooms}{selectedRooms.length > 0 ? ` (${selectedRooms.join(', ')})` : ''} · {nights} night{nights === 1 ? '' : 's'} · total <span className="tnum font-semibold" style={{ color: 'var(--color-ink)' }}>${formatMoney(total)}</span>.
             This is a local demo draft — no inventory was reserved on a server.
           </p>
           <div className="mt-3 flex flex-wrap justify-center gap-2">
@@ -129,11 +143,37 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
             <Field label="Adults"><input type="number" min={1} max={8} value={adults} onChange={(e) => setAdults(Number(e.target.value))} className={inputClass('tnum')} /></Field>
             <Field label="Children"><input type="number" min={0} max={6} value={children} onChange={(e) => setChildren(Number(e.target.value))} className={inputClass('tnum')} /></Field>
             <Field label="Room type">
-              <select value={roomType} onChange={(e) => setRoomType(e.target.value)} className={inputClass()}>
+              <select
+                value={roomType}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setRoomType(next);
+                  setSelectedRooms((prev) =>
+                    prev.filter((no) => {
+                      const r = ROOMS.find((x) => x.number === no);
+                      return r && r.type === next && (r.status === 'Available' || r.status === 'Inspected');
+                    }),
+                  );
+                }}
+                className={inputClass()}
+              >
                 {ROOM_TYPES.filter((t) => t.active).map((t) => <option key={t.id}>{t.name}</option>)}
               </select>
             </Field>
-            <Field label="Rooms"><input type="number" min={1} max={6} value={rooms} onChange={(e) => setRooms(Number(e.target.value))} className={inputClass('tnum')} /></Field>
+            <Field label="Rooms">
+              <input
+                type="number"
+                min={1}
+                max={6}
+                value={rooms}
+                onChange={(e) => {
+                  const next = Math.min(6, Math.max(1, Number(e.target.value) || 1));
+                  setRooms(next);
+                  setSelectedRooms((prev) => prev.slice(0, next));
+                }}
+                className={inputClass('tnum')}
+              />
+            </Field>
             <Field label="Rate plan">
               <select value={ratePlan} onChange={(e) => setRatePlan(e.target.value)} className={inputClass()}>
                 {RATE_PLANS.map((r) => <option key={r}>{r}</option>)}
@@ -148,6 +188,68 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
               {availability > 0 ? `${availability} ${roomType} rooms available` : `No ${roomType} rooms left`} for {nights} night{nights === 1 ? '' : 's'}
             </span>
             <span style={{ color: 'var(--color-ink-secondary)' }}> · demo availability, not live inventory.</span>
+          </div>
+          <div className="mt-4">
+            <p className="pms-label mb-1">Choose rooms — mini blueprint</p>
+            <p className="pms-helper mb-2">
+              {selectedRooms.length} of {rooms} picked{selectedRooms.length > 0 ? `: ${selectedRooms.join(', ')}` : ''} · only {roomType} rooms that are Available or Inspected can be picked · demo sample, not full inventory.
+            </p>
+            <div className="mb-2 flex flex-wrap gap-1.5" aria-label="Room status legend">
+              {['Available', 'Inspected', 'Occupied', 'Dirty', 'Cleaning', 'Out-of-service'].map((s) => (
+                <Badge key={s} tone={roomTone(s as never)}>{s}</Badge>
+              ))}
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {FLOORS.map((f) => {
+                const floorRooms = ROOMS.filter((r) => r.floor === f);
+                if (floorRooms.length === 0) return null;
+                return (
+                  <div key={f} className="rounded-[10px] border p-2.5" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--color-ink-secondary)' }}>
+                      Floor {f} · {floorRooms.length} rooms in sample
+                    </p>
+                    <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-6">
+                      {floorRooms.map((r) => {
+                        const pickable = isPickable(r);
+                        const picked = selectedRooms.includes(r.number);
+                        const oos = r.status === 'Out-of-service';
+                        return (
+                          <button
+                            key={r.number}
+                            type="button"
+                            disabled={!pickable}
+                            aria-pressed={picked}
+                            title={`Room ${r.number} · ${r.type} · ${r.status}`}
+                            onClick={() => toggleRoom(r.number)}
+                            className="rounded-[10px] border p-2 text-center transition-all duration-150 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                            style={{
+                              borderColor: picked ? 'var(--color-primary)' : oos ? 'var(--color-danger-border)' : 'var(--color-border)',
+                              background: picked ? 'var(--color-primary)' : oos ? 'var(--color-danger-bg)' : pickable ? 'var(--color-surface)' : 'var(--color-muted-surface)',
+                              color: picked ? 'var(--color-primary-foreground)' : oos ? 'var(--color-danger-text)' : 'var(--color-ink)',
+                              boxShadow: picked ? 'var(--shadow-sm)' : 'none',
+                              opacity: !pickable && !picked ? 0.72 : 1,
+                            }}
+                          >
+                            <span className="tnum block text-[14px] font-semibold">{r.number}</span>
+                            <span className="block truncate text-[10px] font-semibold uppercase tracking-wide" style={{ color: picked ? 'var(--color-primary-foreground)' : undefined }}>
+                              {r.status === 'Out-of-service' ? 'OOS' : r.status}
+                            </span>
+                            <span className="block truncate text-[10px]" style={{ color: picked ? 'var(--color-primary-foreground)' : 'var(--color-ink-muted)' }}>
+                              {r.type}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {selectedRooms.length > 0 ? (
+              <button type="button" onClick={() => setSelectedRooms([])} className="pms-btn-ghost mt-2 px-3 py-1.5">
+                Clear picked rooms
+              </button>
+            ) : null}
           </div>
         </Card>
 
@@ -191,6 +293,12 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
         <Card>
           <CardTitle title="Price breakdown" subtitle="Calculated locally from mock rates" />
           <ul className="text-[13.5px]">
+            {selectedRooms.length > 0 ? (
+              <li className="flex justify-between border-b py-2" style={{ borderColor: 'var(--color-divider)' }}>
+                <span style={{ color: 'var(--color-ink-secondary)' }}>Picked rooms</span>
+                <span className="tnum font-semibold" style={{ color: 'var(--color-ink)' }}>{selectedRooms.join(', ')}</span>
+              </li>
+            ) : null}
             {[
               [`Room — ${type.name} × ${nights}n × ${rooms}`, `$${formatMoney(roomCharges)}`],
               [`Extras (${extras.length || 'none'})`, `$${formatMoney(extraCharges)}`],
@@ -228,7 +336,7 @@ export function NewReservation({ go }: { go: (t: NavTarget) => void }) {
         onClose={() => setConfirming(false)}
         onConfirm={() => { setDone(`RSV-${9051 + Math.floor(Math.random() * 40)}`); toast('Reservation drafted (demo)', { detail: 'Local draft only — nothing reserved remotely.' }); }}
         title="Create this reservation?"
-        body={`${guestName} · ${roomType} × ${rooms} · ${nights} nights · total $${formatMoney(total)} via ${source}.`}
+        body={`${guestName} · ${roomType} × ${rooms}${selectedRooms.length > 0 ? ` (${selectedRooms.join(', ')})` : ''} · ${nights} nights · total $${formatMoney(total)} via ${source}.`}
         confirmLabel="Create reservation"
       />
     </div>

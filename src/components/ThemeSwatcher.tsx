@@ -22,7 +22,7 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
       setHexError('');
       setCustomAccent(v);
     } else {
-      setHexError('Use a 6-digit hex, e.g. #8C715D.');
+      setHexError('Use a 6-digit hex, e.g. #1D4ED8.');
     }
   };
 
@@ -57,7 +57,7 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
 
         <div className="flex-1 overflow-y-auto px-5 py-5">
           <h3 className="pms-label mb-1">Colour preset</h3>
-          <p className="pms-helper mb-3">Six house palettes in a light linen finish.</p>
+          <p className="pms-helper mb-3">Eight house palettes in a light linen finish.</p>
           <div className="grid grid-cols-1 gap-2.5 xs:grid-cols-2 sm:grid-cols-2" role="radiogroup" aria-label="Colour preset">
             {PRESET_LIST.map((p) => {
               const checked = preset === p.id;
@@ -76,8 +76,16 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
                   }}
                 >
                   <span className="flex items-center justify-between gap-2">
-                    <span className="text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>
+                    <span className="flex items-center gap-1.5 text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>
                       {p.name}
+                      {p.id === 'midnight' ? (
+                        <span
+                          className="rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em]"
+                          style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}
+                        >
+                          Recommended
+                        </span>
+                      ) : null}
                     </span>
                     <span
                       className="flex h-5 w-5 flex-none items-center justify-center rounded-full border text-[11px] font-bold"
@@ -117,7 +125,7 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
               <label className="flex items-center gap-2 text-[13px] font-medium" style={{ color: 'var(--color-ink)' }}>
                 <input
                   type="color"
-                  value={customAccent ?? '#8C715D'}
+                  value={customAccent ?? '#1D4ED8'}
                   onChange={(e) => applyHex(e.target.value)}
                   aria-label="Pick a custom primary colour"
                   className="h-9 w-12 cursor-pointer rounded-md border"
@@ -131,7 +139,7 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
                   type="text"
                   value={hexDraft}
                   onChange={(e) => applyHex(e.target.value)}
-                  placeholder="#8C715D"
+                  placeholder="#1D4ED8"
                   spellCheck={false}
                   maxLength={7}
                   aria-label="Custom accent hex value"

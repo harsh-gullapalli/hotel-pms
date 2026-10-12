@@ -202,14 +202,3 @@ export function FilterChip({
     </button>
   );
 }
-
-/** Card wrapper for mobile: renders children as stacked cards under `md`, table on desktop. */
-export function ResponsiveTable({ children, minWidth = 640 }: { children: ReactNode; minWidth?: number }) {
-  return (
-    <div className="pms-table-wrap">
-      <table className="pms-table" style={{ minWidth: `${minWidth}px` }}>
-        {children}
-      </table>
-    </div>
-  );
-}

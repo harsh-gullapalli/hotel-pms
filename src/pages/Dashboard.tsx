@@ -1,8 +1,7 @@
 import { FOLIOS, NOTICES, PAYMENTS, RESERVATIONS, ROOMS, TASKS, TODAY, folioBalance, formatMoney } from '../data/mock';
-import { Badge, Card, CardTitle } from '../components/ui';
+import { Badge, Card, CardTitle, ProgressBar } from '../components/ui';
 import { paymentTone, reservationTone, roomTone } from '../components/status';
 import { StatCard } from '../components/controls';
-import { BarChart, DonutChart } from '../components/charts';
 import type { NavTarget } from '../components/nav';
 
 const NOTICE_DOT: Record<string, string> = {
@@ -43,74 +42,6 @@ export function Dashboard({ go }: { go: (t: NavTarget) => void }) {
 
       <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-5">
         <Card elevated className="lg:col-span-2 xl:col-span-3">
-          <CardTitle title="Revenue trend" subtitle="Room revenue in $k, last 7 days" action={<Badge tone="success">● On pace +8%</Badge>} />
-          <BarChart
-            label="Revenue rising toward Friday peak"
-            data={[
-              { label: 'Mon', value: 32 },
-              { label: 'Tue', value: 38 },
-              { label: 'Wed', value: 35 },
-              { label: 'Thu', value: 44 },
-              { label: 'Fri', value: 52, highlight: true },
-              { label: 'Sat', value: 48 },
-              { label: 'Sun', value: 41 },
-            ]}
-          />
-        </Card>
-        <Card className="lg:col-span-2 xl:col-span-2">
-          <CardTitle title="Occupancy mix" subtitle="Rooms by status tonight" />
-          <DonutChart
-            label="Rooms by status"
-            slices={[
-              { label: 'Occupied', value: TODAY.occupied, color: 'var(--color-primary)' },
-              { label: 'Available', value: TODAY.available, color: 'var(--color-soft)' },
-              { label: 'Dirty', value: TODAY.dirty, color: 'var(--color-warning-text)' },
-              { label: 'Out of service', value: TODAY.outOfService, color: 'var(--color-danger-text)' },
-            ]}
-          />
-          <button type="button" onClick={() => go({ view: 'status-board' })} className="pms-btn-ghost mt-4 w-full px-3 py-2">
-            Open status board
-          </button>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <Card>
-          <CardTitle title="Pending check-ins" subtitle={`${arrivals.length} expected today`} action={<button type="button" onClick={() => go({ view: 'check-in' })} className="pms-btn-primary px-3 py-2">Check-in desk</button>} />
-          <ul className="flex flex-col gap-2">
-            {arrivals.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-[10px] border px-3 py-2.5" style={{ borderColor: 'var(--color-border)' }}>
-                <span>
-                  <span className="block text-[13.5px] font-semibold" style={{ color: 'var(--color-ink)' }}>{r.guest}</span>
-                  <span className="tnum block text-[12px]" style={{ color: 'var(--color-ink-secondary)' }}>{r.id} · {r.roomType} · {r.nights}n</span>
-                </span>
-                <Badge tone={reservationTone(r.status)}>{r.status}</Badge>
-              </li>
-            ))}
-          </ul>
-        </Card>
-        <Card>
-          <CardTitle title="Pending check-outs" subtitle={`${departures.length} due out today`} action={<button type="button" onClick={() => go({ view: 'check-out' })} className="pms-btn-primary px-3 py-2">Check-out desk</button>} />
-          {departures.length === 0 ? (
-            <p className="pms-helper py-4 text-center">No pending departures — all checked out.</p>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {departures.map((r) => (
-                <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-[10px] border px-3 py-2.5" style={{ borderColor: 'var(--color-border)' }}>
-                  <span>
-                    <span className="block text-[13.5px] font-semibold" style={{ color: 'var(--color-ink)' }}>{r.guest}</span>
-                    <span className="tnum block text-[12px]" style={{ color: 'var(--color-ink-secondary)' }}>{r.id} · {r.room} · ${formatMoney(r.total - r.paid)} due</span>
-                  </span>
-                  <Badge tone={reservationTone(r.status)}>{r.status}</Badge>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-5">
-        <Card className="xl:col-span-3">
           <CardTitle title="Recent reservations" subtitle="Latest bookings" action={<button type="button" onClick={() => go({ view: 'reservations' })} className="pms-btn-ghost px-3 py-2">View all</button>} />
           <div className="overflow-x-auto">
             <table className="pms-table min-w-[560px]">
@@ -129,40 +60,82 @@ export function Dashboard({ go }: { go: (t: NavTarget) => void }) {
             </table>
           </div>
         </Card>
-        <Card className="xl:col-span-2">
-          <CardTitle title="Recent payments" subtitle="Latest receipts" action={<button type="button" onClick={() => go({ view: 'payments' })} className="pms-btn-ghost px-3 py-2">Ledger</button>} />
-          <ul className="flex flex-col gap-2">
-            {PAYMENTS.slice(0, 4).map((p) => (
-              <li key={p.ref} className="flex items-center justify-between gap-2 text-[13px]">
-                <span>
-                  <span className="block font-semibold" style={{ color: 'var(--color-ink)' }}>{p.guest}</span>
-                  <span className="tnum block text-[12px]" style={{ color: 'var(--color-ink-secondary)' }}>{p.ref} · {p.method}</span>
-                </span>
-                <span className="text-right">
-                  <span className="tnum block font-semibold" style={{ color: 'var(--color-ink)' }}>${formatMoney(p.amount)}</span>
-                  <Badge tone={paymentTone(p.status)}>{p.status}</Badge>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Card>
+        <div className="flex flex-col gap-4 sm:gap-5 lg:col-span-2 xl:col-span-2">
+          <Card>
+            <CardTitle title="Pending check-ins" subtitle={`${arrivals.length} expected today`} action={<button type="button" onClick={() => go({ view: 'check-in' })} className="pms-btn-primary px-3 py-2">Check-in desk</button>} />
+            <ul className="flex flex-col gap-2">
+              {arrivals.map((r) => (
+                <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-[10px] border px-3 py-2.5" style={{ borderColor: 'var(--color-border)' }}>
+                  <span>
+                    <span className="block text-[13.5px] font-semibold" style={{ color: 'var(--color-ink)' }}>{r.guest}</span>
+                    <span className="tnum block text-[12px]" style={{ color: 'var(--color-ink-secondary)' }}>{r.id} · {r.roomType} · {r.nights}n</span>
+                  </span>
+                  <Badge tone={reservationTone(r.status)}>{r.status}</Badge>
+                </li>
+              ))}
+            </ul>
+          </Card>
+          <Card>
+            <CardTitle title="Pending check-outs" subtitle={`${departures.length} due out today`} action={<button type="button" onClick={() => go({ view: 'check-out' })} className="pms-btn-primary px-3 py-2">Check-out desk</button>} />
+            {departures.length === 0 ? (
+              <p className="pms-helper py-4 text-center">No pending departures — all checked out.</p>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {departures.map((r) => (
+                  <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-[10px] border px-3 py-2.5" style={{ borderColor: 'var(--color-border)' }}>
+                    <span>
+                      <span className="block text-[13.5px] font-semibold" style={{ color: 'var(--color-ink)' }}>{r.guest}</span>
+                      <span className="tnum block text-[12px]" style={{ color: 'var(--color-ink-secondary)' }}>{r.id} · {r.room} · ${formatMoney(r.total - r.paid)} due</span>
+                    </span>
+                    <Badge tone={reservationTone(r.status)}>{r.status}</Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-5">
         <Card className="xl:col-span-2">
           <CardTitle title="Housekeeping progress" subtitle={`${hkDone} of ${TASKS.length} tasks complete`} />
-          <ul className="flex flex-col gap-2">
-            {['Available', 'Occupied', 'Dirty', 'Cleaning', 'Inspected', 'Out-of-service'].map((s) => {
+          <div className="mb-3">
+            <div className="mb-1.5 flex items-baseline justify-between gap-2">
+              <span className="tnum text-[22px] font-bold leading-none" style={{ color: 'var(--color-ink)' }}>
+                {TASKS.length > 0 ? Math.round((hkDone / TASKS.length) * 100) : 0}%
+              </span>
+              <span className="text-[11.5px] font-medium" style={{ color: 'var(--color-ink-secondary)' }}>tasks done</span>
+            </div>
+            <ProgressBar value={TASKS.length > 0 ? (hkDone / TASKS.length) * 100 : 0} />
+          </div>
+          <ul className="flex flex-col gap-1.5">
+            {(['Available', 'Occupied', 'Dirty', 'Cleaning', 'Inspected', 'Out-of-service'] as const).map((s) => {
               const count = ROOMS.filter((r) => r.status === s).length;
+              const share = ROOMS.length > 0 ? (count / ROOMS.length) * 100 : 0;
+              const barColor =
+                roomTone(s) === 'success'
+                  ? 'var(--color-success-text)'
+                  : roomTone(s) === 'info'
+                    ? 'var(--color-info-text)'
+                    : roomTone(s) === 'warning'
+                      ? 'var(--color-warning-text)'
+                      : roomTone(s) === 'danger'
+                        ? 'var(--color-danger-text)'
+                        : 'var(--color-neutral-text)';
               return (
-                <li key={s} className="flex items-center justify-between gap-3 text-[13px]">
-                  <Badge tone={roomTone(s as never)}>{s}</Badge>
-                  <span className="tnum font-semibold" style={{ color: 'var(--color-ink)' }}>{count} rooms</span>
+                <li key={s} className="rounded-[10px] border px-2.5 py-2" style={{ borderColor: 'var(--color-border)', background: 'color-mix(in srgb, var(--color-muted-surface) 45%, transparent)' }}>
+                  <span className="flex items-center justify-between gap-3 text-[13px]">
+                    <Badge tone={roomTone(s)}>{s}</Badge>
+                    <span className="tnum font-semibold" style={{ color: 'var(--color-ink)' }}>{count} rooms</span>
+                  </span>
+                  <span className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'var(--color-divider)' }} aria-hidden="true">
+                    <span className="block h-full rounded-full" style={{ width: `${share}%`, background: barColor }} />
+                  </span>
                 </li>
               );
             })}
           </ul>
-          <button type="button" onClick={() => go({ view: 'housekeeping' })} className="pms-btn-ghost mt-4 w-full px-3 py-2">Housekeeping dashboard</button>
+          <button type="button" onClick={() => go({ view: 'housekeeping' })} className="pms-btn-ghost mt-3 w-full px-3 py-2">Housekeeping dashboard</button>
         </Card>
         <Card className="xl:col-span-3">
           <CardTitle title="Alerts & operational tasks" subtitle="Needs attention now" />
@@ -182,6 +155,28 @@ export function Dashboard({ go }: { go: (t: NavTarget) => void }) {
               </li>
             ))}
           </ul>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-5">
+        <Card className="xl:col-span-5">
+          <CardTitle title="Recent payments" subtitle="Latest receipts" action={<button type="button" onClick={() => go({ view: 'payments' })} className="pms-btn-ghost px-3 py-2">Ledger</button>} />
+          <div className="overflow-x-auto">
+            <table className="pms-table min-w-[560px]">
+              <thead><tr><th>Reference</th><th>Guest</th><th>Method</th><th>Status</th><th className="text-right">Amount</th></tr></thead>
+              <tbody>
+                {PAYMENTS.slice(0, 4).map((p) => (
+                  <tr key={p.ref}>
+                    <td className="tnum font-mono font-semibold">{p.ref}</td>
+                    <td>{p.guest}</td>
+                    <td className="tnum" style={{ color: 'var(--color-ink-secondary)' }}>{p.method}</td>
+                    <td><Badge tone={paymentTone(p.status)}>{p.status}</Badge></td>
+                    <td className="tnum text-right font-semibold">${formatMoney(p.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card>
       </div>
     </div>

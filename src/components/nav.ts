@@ -108,8 +108,3 @@ export function sectionOf(view: ViewId): string {
   const found = NAV_SECTIONS.find((s) => s.items.some((i) => i.id === view));
   return found ? found.title : '';
 }
-
-export function labelOf(view: ViewId): string {
-  const found = NAV_ITEMS.find((i) => i.id === view);
-  return found ? found.label : view;
-}

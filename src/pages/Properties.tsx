@@ -3,9 +3,9 @@ import { Badge, Card, CardTitle } from '../components/ui';
 import { toast } from '../components/toastStore';
 
 const BRANCHES = [
-  { name: 'Atrium House', place: 'Lakeshore · flagship', rooms: 159, occ: '78%', current: true },
-  { name: 'Atrium Court', place: 'Old Town · suites', rooms: 84, occ: '71%', current: false },
-  { name: 'Atrium Bay', place: 'Harbour · seasonal', rooms: 62, occ: '64%', current: false },
+  { name: 'TriponX House', place: 'Lakeshore · flagship', rooms: 159, occ: '78%', current: true },
+  { name: 'TriponX Court', place: 'Old Town · suites', rooms: 84, occ: '71%', current: false },
+  { name: 'TriponX Bay', place: 'Harbour · seasonal', rooms: 62, occ: '64%', current: false },
 ];
 
 export function Properties() {

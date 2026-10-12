@@ -81,8 +81,6 @@ canvas {
 body {
   margin: 0;
   background: var(--color-page);
-  background-image: var(--gradient-page);
-  background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -193,14 +191,14 @@ body {
     box-shadow: var(--shadow-lg);
   }
   .pms-btn-primary {
-    background: var(--gradient-primary, var(--color-primary));
+    background: var(--color-primary);
     color: var(--color-primary-foreground);
     border: 1px solid color-mix(in srgb, var(--color-primary-active) 55%, transparent);
     border-radius: var(--radius-control);
     font-weight: 650;
     font-size: 13px;
     letter-spacing: 0.01em;
-    box-shadow: var(--shadow-primary), inset 0 1px 0 rgb(255 255 255 / 0.16);
+    box-shadow: none;
     transition:
       box-shadow var(--transition-base),
       transform var(--transition-fast),
@@ -208,15 +206,15 @@ body {
       border-color var(--transition-fast);
   }
   .pms-btn-primary:hover {
-    background: var(--gradient-primary, var(--color-primary-hover));
-    box-shadow: var(--shadow-primary), inset 0 1px 0 rgb(255 255 255 / 0.16);
+    background: var(--color-primary-hover);
+    box-shadow: none;
     transform: translateY(-1px);
     filter: brightness(1.06) saturate(1.04);
   }
   .pms-btn-primary:active {
-    background: var(--gradient-primary, var(--color-primary-active));
+    background: var(--color-primary-active);
     transform: translateY(0) scale(0.99);
-    box-shadow: var(--shadow-xs), inset 0 1px 0 rgb(255 255 255 / 0.12);
+    box-shadow: none;
     filter: brightness(0.96);
   }
   .pms-btn-primary:disabled {
@@ -232,7 +230,7 @@ body {
     border-radius: var(--radius-control);
     font-weight: 550;
     font-size: 13px;
-    box-shadow: var(--shadow-xs);
+    box-shadow: none;
     transition:
       color var(--transition-fast),
       box-shadow var(--transition-base),
@@ -243,14 +241,14 @@ body {
   .pms-btn-ghost:hover {
     background: var(--color-surface);
     color: var(--color-ink);
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     border-color: color-mix(in srgb, var(--color-primary) 32%, var(--color-border));
     transform: translateY(-1px);
     filter: brightness(0.985);
   }
   .pms-btn-ghost:active {
     transform: translateY(0);
-    box-shadow: var(--shadow-xs);
+    box-shadow: none;
     filter: brightness(0.97);
   }
   .pms-input {
@@ -280,22 +278,6 @@ body {
   select.pms-input,
   textarea.pms-input {
     box-shadow: var(--shadow-xs);
-  }
-  .pms-table-wrap {
-    overflow-x: auto;
-    overflow-y: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-sm);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-gutter: stable;
-  }
-  .pms-table-wrap .pms-table thead th:first-child {
-    border-top-left-radius: 0;
-  }
-  .pms-table-wrap .pms-table thead th:last-child {
-    border-top-right-radius: 0;
   }
   .pms-table {
     width: 100%;
@@ -381,14 +363,6 @@ body {
     color: var(--color-ink-muted);
     line-height: 1.5;
   }
-  .pms-page-title {
-    font-size: clamp(22px, 2.4vw + 14px, 30px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    color: var(--color-ink);
-    text-wrap: balance;
-  }
   .pms-section-title {
     font-size: clamp(15.5px, 1vw + 13px, 18px);
     font-weight: 700;
@@ -403,24 +377,6 @@ body {
     line-height: 1.05;
     font-variant-numeric: tabular-nums;
     color: var(--color-ink);
-  }
-  .pms-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 10px;
-    padding: 10px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-    background:
-      var(--gradient-card-sheen),
-      var(--color-surface);
-    box-shadow: var(--shadow-sm);
-  }
-  .pms-grid-auto {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 168px), 1fr));
   }
   .pms-form-grid {
     display: grid;
@@ -608,12 +564,6 @@ body {
 }
 
 @media (min-width: 1536px) {
-  .pms-page-title {
-    font-size: 30px;
-  }
-  .pms-grid-auto {
-    gap: 14px;
-  }
   /* Keep ultrawide tables comfortable, not stretched */
   .pms-table tbody td,
   .pms-table thead th {
@@ -640,9 +590,7 @@ aside nav button:not([aria-current='page']):hover {
 }
 
 /* Low-end safeguards: never let flex/grid children force page-level sideways scroll */
-.pms-card,
-.pms-toolbar,
-.pms-table-wrap {
+.pms-card {
   min-width: 0;
 }
 main {

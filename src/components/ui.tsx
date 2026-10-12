@@ -128,20 +128,3 @@ export function Avatar({ name, size = 32 }: { name: string; size?: number }) {
     </span>
   );
 }
-
-export function EmptyState({ title, hint }: { title: string; hint: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2 rounded-[12px] border border-dashed px-4 py-9 text-center" style={{ borderColor: 'var(--color-border)', background: 'color-mix(in srgb, var(--color-muted-surface) 45%, transparent)' }}>
-      <span className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'var(--color-muted-surface)', boxShadow: 'var(--shadow-sm)' }} aria-hidden="true">
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="var(--color-ink-muted)" strokeWidth={1.8} strokeLinecap="round">
-          <circle cx="11" cy="11" r="6.5" />
-          <path d="M16 16l4.5 4.5" />
-        </svg>
-      </span>
-      <p className="text-[13.5px] font-semibold" style={{ color: 'var(--color-ink)' }}>
-        {title}
-      </p>
-      <p className="pms-helper max-w-[280px]">{hint}</p>
-    </div>
-  );
-}

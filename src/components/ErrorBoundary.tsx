@@ -21,7 +21,7 @@ export class ErrorBoundary extends Component<BoundaryProps, BoundaryState> {
   }
 
   componentDidCatch(error: Error) {
-    console.error('[Atrium error boundary]', error);
+    console.error('[TriponX error boundary]', error);
   }
 
   componentDidUpdate(prev: BoundaryProps) {

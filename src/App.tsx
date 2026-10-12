@@ -1,7 +1,6 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import { Header, Sidebar } from './components/layout';
-import type { NavTarget, ViewId } from './components/nav';
-import { labelOf, sectionOf } from './components/nav';
+import type { NavTarget } from './components/nav';
 import { ThemeSwatcher } from './components/ThemeSwatcher';
 import { AppCrashFallback, ErrorBoundary, PanelCrashFallback } from './components/ErrorBoundary';
 import { ThemeProvider } from './theme/ThemeContext';
@@ -52,42 +51,12 @@ function PageFallback() {
   );
 }
 
-const VIEW_META: Record<ViewId, { title: string; subtitle: string }> = {
-  dashboard: { title: 'Good evening, Atrium', subtitle: 'Friday, Oct 10 · 124 in-house · 24 arrivals · 18 departures' },
-  reservations: { title: 'Reservations', subtitle: 'Bookings, calendar and channel mix' },
-  'new-reservation': { title: 'New Reservation', subtitle: 'Create a booking with live price breakdown' },
-  'check-in': { title: 'Check-in', subtitle: 'Front-desk arrivals workflow' },
-  'check-out': { title: 'Check-out', subtitle: 'Departures, folios and settlement' },
-  'in-house': { title: 'In-house Guests', subtitle: 'Everyone currently staying' },
-  guests: { title: 'Guest Directory', subtitle: 'Profiles, tiers and lifetime value' },
-  'walk-in': { title: 'Walk-in Registration', subtitle: 'Register guests without a booking' },
-  'room-overview': { title: 'Room Overview', subtitle: '159 rooms · 5 floors · live status' },
-  'room-types': { title: 'Room Types', subtitle: 'Categories, occupancy and base rates' },
-  'room-inventory': { title: 'Room Inventory', subtitle: 'Every room in one operational table' },
-  'status-board': { title: 'Room Status Board', subtitle: 'Compact live board by floor' },
-  housekeeping: { title: 'Housekeeping', subtitle: 'Turnover queue and inspections' },
-  maintenance: { title: 'Maintenance', subtitle: 'Work orders and out-of-service rooms' },
-  folios: { title: 'Folios & Billing', subtitle: 'Guest folios and balances' },
-  payments: { title: 'Payments', subtitle: 'Ledger, receipts and collection' },
-  invoices: { title: 'Invoices', subtitle: 'Bills, previews and print' },
-  expenses: { title: 'Expenses', subtitle: 'Property spend and approvals' },
-  'rate-management': { title: 'Rate Management', subtitle: 'Plans, seasons and availability calendar' },
-  reports: { title: 'Reports', subtitle: 'Operations and finance analytics' },
-  'occupancy-report': { title: 'Occupancy Report', subtitle: 'Occupancy trends by day and segment' },
-  'revenue-report': { title: 'Revenue Report', subtitle: 'Revenue, ADR and RevPAR' },
-  'arrivals-departures': { title: 'Arrivals & Departures', subtitle: 'Movement report' },
-  'staff-roles': { title: 'Staff & Roles', subtitle: 'Team, departments and permissions' },
-  properties: { title: 'Properties', subtitle: 'Branches in the group' },
-  settings: { title: 'Settings', subtitle: 'Property defaults and appearance' },
-};
-
 function Shell() {
   const [target, setTarget] = useState<NavTarget>({ view: 'dashboard' });
   const [navOpen, setNavOpen] = useState(false);
   const [swatcherOpen, setSwatcherOpen] = useState(false);
   const { preset } = useTheme();
   const view = target.view;
-  const meta = VIEW_META[view];
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -156,16 +125,13 @@ function Shell() {
   }, [view, target.query, target.focusId, go]);
 
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--color-page)', backgroundImage: 'var(--gradient-page)', backgroundAttachment: 'fixed', color: 'var(--color-ink)' }}>
+    <div className="flex min-h-screen" style={{ background: 'var(--color-page)', color: 'var(--color-ink)' }}>
       <a href="#pms-main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[70] focus:rounded-[10px] focus:border focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', color: 'var(--color-ink)' }}>
         Skip to main content
       </a>
       <Sidebar active={view} onNavigate={(v) => go({ view: v })} mobileOpen={navOpen} onClose={() => setNavOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header
-          title={meta.title}
-          subtitle={meta.subtitle}
-          crumb={`${sectionOf(view)} · ${labelOf(view)}`}
           onMenu={() => setNavOpen(true)}
           onOpenThemes={() => setSwatcherOpen(true)}
           onGo={go}
@@ -175,10 +141,10 @@ function Shell() {
         </main>
         <footer
           className="border-t px-4 py-3.5 sm:px-6"
-          style={{ borderColor: 'var(--color-border)', background: 'color-mix(in srgb, var(--color-sidebar) 88%, var(--color-surface))', boxShadow: '0 -8px 24px -16px rgb(40 30 20 / 0.18)' }}
+          style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
         >
           <p className="tnum mx-auto w-full max-w-[1280px] text-[11.5px] font-medium 2xl:max-w-[1440px]" style={{ color: 'var(--color-ink-secondary)' }}>
-            Atrium PMS · {THEME_PRESETS[preset].name} · 6 colour themes ·
+            TriponX PMS · {THEME_PRESETS[preset].name} · 8 colour themes ·
             status colours fixed across themes · static demo data
           </p>
         </footer>

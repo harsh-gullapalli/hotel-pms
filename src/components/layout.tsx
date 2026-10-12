@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { NAV_ITEMS, NAV_SECTIONS, sectionOf } from './nav';
 import type { NavTarget, ViewId } from './nav';
-import { GUESTS, NOTICES, RESERVATIONS, ROOMS } from '../data/mock';
+import { NOTICES } from '../data/mock';
 import { toast } from './toastStore';
 
 function NavIcon({ id }: { id: ViewId }) {
@@ -149,21 +149,21 @@ function NavButton({
       style={
         selected
           ? {
-              background: 'var(--color-surface)',
-              color: 'var(--color-ink)',
-              border: '1px solid var(--color-border)',
-              boxShadow: 'var(--shadow-xs), inset 3px 0 0 var(--color-primary)',
+              background: '#FFFFFF',
+              color: '#075985',
+              border: '1px solid rgb(255 255 255 / 0.35)',
+              boxShadow: 'var(--shadow-xs), inset 3px 0 0 #075985',
               fontWeight: 650,
             }
           : {
               background: 'transparent',
-              color: 'var(--color-ink-secondary)',
+              color: 'rgb(255 255 255 / 0.85)',
               border: '1px solid transparent',
               fontWeight: 500,
             }
       }
     >
-      <span className="flex-none" style={{ color: selected ? 'var(--color-primary)' : 'inherit' }}>
+      <span className="flex-none" style={{ color: selected ? '#075985' : 'inherit' }}>
         <NavIcon id={id} />
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
@@ -197,19 +197,19 @@ export function Sidebar({
 
   const panel = (
     <div className="flex h-full flex-col" style={{ background: 'var(--color-sidebar)' }}>
-      <div className="flex items-center gap-3 border-b px-4 pb-4 pt-5" style={{ borderColor: 'var(--color-border)' }}>
+      <div className="flex items-center gap-3 border-b px-4 pb-4 pt-5" style={{ borderColor: 'rgb(255 255 255 / 0.22)' }}>
         <span
           className="flex h-10 w-10 items-center justify-center rounded-xl font-brand text-[19px] font-bold"
           style={{ background: 'var(--color-dark-accent)', color: '#fff', boxShadow: 'var(--shadow-sm)' }}
           aria-hidden="true"
         >
-          A
+          T
         </span>
         <div className="min-w-0">
-          <p className="font-brand truncate text-[18px] font-bold leading-none tracking-tight" style={{ color: 'var(--color-ink)' }}>
-            Atrium
+          <p className="font-brand truncate text-[18px] font-bold leading-none tracking-tight" style={{ color: '#FFFFFF' }}>
+            TriponX
           </p>
-          <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--color-ink-secondary)' }}>
+          <p className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgb(255 255 255 / 0.75)' }}>
             Hotel PMS
           </p>
         </div>
@@ -240,7 +240,7 @@ export function Sidebar({
                   aria-expanded={open}
                   className="flex min-h-[32px] w-full items-center justify-between rounded-[8px] px-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-[0.12em]"
                   style={{
-                    color: containsActive ? 'var(--color-ink)' : 'var(--color-ink-muted)',
+                    color: containsActive ? '#FFFFFF' : 'rgb(255 255 255 / 0.72)',
                     background: 'transparent',
                   }}
                 >
@@ -263,11 +263,6 @@ export function Sidebar({
           })}
         </ul>
       </nav>
-      <div className="border-t px-4 py-3" style={{ borderColor: 'var(--color-border)' }}>
-        <p className="truncate text-[11px] font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-          Atrium PMS · Front Office
-        </p>
-      </div>
     </div>
   );
 
@@ -292,8 +287,8 @@ export function Sidebar({
             className="pms-overlay-enter absolute left-0 top-0 h-full w-[86vw] max-w-[320px] overflow-hidden rounded-r-[16px] border-r"
             style={{ borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-2xl)', background: 'var(--color-sidebar)' }}
           >
-            <div className="flex items-center justify-between border-b px-4 py-3 lg:hidden" style={{ borderColor: 'var(--color-border)' }}>
-              <span className="text-[12px] font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--color-ink-secondary)' }}>Menu</span>
+            <div className="flex items-center justify-between border-b px-4 py-3 lg:hidden" style={{ borderColor: 'rgb(255 255 255 / 0.22)' }}>
+              <span className="text-[12px] font-bold uppercase tracking-[0.12em]" style={{ color: 'rgb(255 255 255 / 0.75)' }}>Menu</span>
               <button type="button" onClick={onClose} aria-label="Close navigation" className="pms-btn-ghost min-h-[38px] min-w-[38px] px-2.5 py-1.5">✕</button>
             </div>
             <div className="h-[calc(100%-53px)]">{panel}</div>
@@ -302,52 +297,6 @@ export function Sidebar({
       ) : null}
     </>
   );
-}
-
-interface SearchHit {
-  kind: 'Reservation' | 'Guest' | 'Room';
-  label: string;
-  detail: string;
-  target: NavTarget;
-}
-
-function searchAll(q: string): SearchHit[] {
-  const needle = q.trim().toLowerCase();
-  if (needle.length < 2) return [];
-  const res: SearchHit[] = [];
-  RESERVATIONS.filter(
-    (r) => r.guest.toLowerCase().includes(needle) || r.id.toLowerCase().includes(needle),
-  )
-    .slice(0, 4)
-    .forEach((r) =>
-      res.push({
-        kind: 'Reservation',
-        label: `${r.id} · ${r.guest}`,
-        detail: `${r.room} · ${r.status}`,
-        target: { view: 'reservations', query: r.id, focusId: r.id },
-      }),
-    );
-  GUESTS.filter((g) => g.name.toLowerCase().includes(needle) || g.id.toLowerCase().includes(needle))
-    .slice(0, 4)
-    .forEach((g) =>
-      res.push({
-        kind: 'Guest',
-        label: `${g.name} · ${g.id}`,
-        detail: `${g.tier} · ${g.stays} stays`,
-        target: { view: 'guests', query: g.name, focusId: g.id },
-      }),
-    );
-  ROOMS.filter((r) => r.number.includes(needle))
-    .slice(0, 4)
-    .forEach((r) =>
-      res.push({
-        kind: 'Room',
-        label: `Room ${r.number} · ${r.type}`,
-        detail: r.guest ? `${r.status} · ${r.guest}` : r.status,
-        target: { view: 'room-overview', query: r.number, focusId: r.number },
-      }),
-    );
-  return res.slice(0, 9);
 }
 
 const NOTICE_TONE_DOT: Record<string, string> = {
@@ -377,37 +326,19 @@ function useDismiss(onDismiss: () => void) {
 }
 
 export function Header({
-  title,
-  subtitle,
-  crumb,
   onMenu,
   onOpenThemes,
   onGo,
 }: {
-  title: string;
-  subtitle: string;
-  crumb: string;
   onMenu: () => void;
   onOpenThemes: () => void;
   onGo: (t: NavTarget) => void;
 }) {
-  const [query, setQuery] = useState('');
-  const [searchFocus, setSearchFocus] = useState(false);
-  const [mobileSearch, setMobileSearch] = useState(false);
   const [panel, setPanel] = useState<'none' | 'notices' | 'profile'>('none');
   const [read, setRead] = useState<string[]>([]);
-  const hits = searchAll(query);
   const closePanels = () => setPanel('none');
   const dismissRef = useDismiss(closePanels);
   const unread = NOTICES.filter((n) => !read.includes(n.id)).length;
-
-  const submitSearch = () => {
-    if (hits.length > 0) {
-      onGo(hits[0].target);
-      setQuery('');
-      setMobileSearch(false);
-    }
-  };
 
   const openNotice = (target: string, id: string) => {
     setRead((r) => (r.includes(id) ? r : [...r, id]));
@@ -438,86 +369,7 @@ export function Header({
             <path d="M4 7h16M4 12h16M4 17h16" />
           </svg>
         </button>
-        <div className="min-w-0 flex-1 basis-40">
-          <p className="truncate text-[10.5px] font-bold uppercase tracking-[0.14em] sm:text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>
-            {crumb}
-          </p>
-          <h1 className="pms-page-title truncate">{title}</h1>
-          <p className="pms-helper hidden truncate sm:block">{subtitle}</p>
-        </div>
-        <div className="relative hidden min-w-[200px] max-w-[300px] flex-1 md:block">
-          <label className="sr-only" htmlFor="global-search">
-            Search reservations, rooms, guests
-          </label>
-          <input
-            id="global-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setSearchFocus(true)}
-            onBlur={() => window.setTimeout(() => setSearchFocus(false), 150)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') submitSearch();
-            }}
-            placeholder="Search reservations, rooms, guests…"
-            className="pms-input w-full px-3.5 py-2.5"
-            role="combobox"
-            aria-expanded={searchFocus && hits.length > 0}
-            aria-controls="global-search-results"
-          />
-          {searchFocus && hits.length > 0 ? (
-            <ul
-              id="global-search-results"
-              role="listbox"
-              aria-label="Search results"
-              className="pms-animate-pop absolute left-0 right-0 top-full z-40 mt-2 overflow-hidden rounded-[14px] border"
-              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-popover)' }}
-            >
-              {hits.map((h) => (
-                <li key={`${h.kind}-${h.label}`}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected="false"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      onGo(h.target);
-                      setQuery('');
-                    }}
-                    className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left"
-                  >
-                    <span
-                      className="flex-none rounded-full px-2 py-0.5 text-[10.5px] font-semibold"
-                      style={{ background: 'var(--color-muted-surface)', color: 'var(--color-ink-secondary)' }}
-                    >
-                      {h.kind}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>
-                        {h.label}
-                      </span>
-                      <span className="block truncate text-[11.5px]" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {h.detail}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-        <button
-          type="button"
-          onClick={() => setMobileSearch((v) => !v)}
-          aria-label="Toggle search"
-          aria-expanded={mobileSearch}
-          className="pms-btn-ghost min-h-[42px] min-w-[42px] flex-none px-2.5 py-2 md:hidden"
-        >
-          <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="M16 16l4.5 4.5" />
-          </svg>
-        </button>
+        <div className="min-w-0 flex-1 basis-40" aria-hidden="true" />
         <div className="relative flex-none" ref={panel === 'notices' ? dismissRef : undefined}>
           <button
             type="button"
@@ -654,56 +506,6 @@ export function Header({
           ) : null}
         </div>
       </div>
-      {mobileSearch ? (
-        <div className="border-t px-3 pb-3 pt-2 md:hidden" style={{ borderColor: 'var(--color-border)' }}>
-          <div className="mx-auto w-full max-w-[1280px]">
-            <label className="sr-only" htmlFor="global-search-mobile">
-              Search reservations, rooms, guests
-            </label>
-            <input
-              id="global-search-mobile"
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') submitSearch();
-              }}
-              placeholder="Search reservations, rooms, guests…"
-              className="pms-input w-full px-3.5 py-2.5"
-              autoFocus
-            />
-            {query.trim().length >= 2 ? (
-              <ul className="mt-2 overflow-hidden rounded-[12px] border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: 'var(--shadow-md)' }}>
-                {hits.length === 0 ? (
-                  <li className="pms-helper px-3.5 py-3">No matches — try a name, ID, or room number.</li>
-                ) : (
-                  hits.map((h) => (
-                    <li key={`${h.kind}-${h.label}`}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onGo(h.target);
-                          setQuery('');
-                          setMobileSearch(false);
-                        }}
-                        className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left"
-                      >
-                        <span className="flex-none rounded-full px-2 py-0.5 text-[10.5px] font-semibold" style={{ background: 'var(--color-muted-surface)', color: 'var(--color-ink-secondary)' }}>
-                          {h.kind}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>{h.label}</span>
-                          <span className="block truncate text-[11.5px]" style={{ color: 'var(--color-ink-secondary)' }}>{h.detail}</span>
-                        </span>
-                      </button>
-                    </li>
-                  ))
-                )}
-              </ul>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }
