@@ -76,16 +76,8 @@ export function ThemeSwatcher({ open, onClose }: { open: boolean; onClose: () =>
                   }}
                 >
                   <span className="flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>
+                    <span className="text-[13px] font-semibold" style={{ color: 'var(--color-ink)' }}>
                       {p.name}
-                      {p.id === 'midnight' ? (
-                        <span
-                          className="rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em]"
-                          style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground)' }}
-                        >
-                          Recommended
-                        </span>
-                      ) : null}
                     </span>
                     <span
                       className="flex h-5 w-5 flex-none items-center justify-center rounded-full border text-[11px] font-bold"
